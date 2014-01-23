@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Dashbridge::Application.config.secret_key_base = '2b29a64d6174ac287f1f38103103004b28a30693019e2fd4bb1428bbff02281c2fda1f469d6c88ac58d2a8e5f1eed9da19e9593a3ab017da23b6d3c0a79867e0'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Dashbridge::Application.config.secret_key_base = secure_token;
